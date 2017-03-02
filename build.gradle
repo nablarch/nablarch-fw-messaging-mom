@@ -1,5 +1,5 @@
 group = 'com.nablarch.framework'
-version = '1.0.1'
+version = '1.0.2'
 description = 'MOMメッセージングを実現する'
 
 
@@ -31,6 +31,6 @@ dependencies {
 }
 
 task wrapper(type: Wrapper) {
-  gradleVersion = '2.4'
+  gradleVersion = '2.13'
 }
 

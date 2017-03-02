@@ -18,6 +18,7 @@ import javax.jms.Session;
 
 import nablarch.core.log.Logger;
 import nablarch.core.log.LoggerManager;
+import nablarch.core.util.annotation.Published;
 import nablarch.fw.messaging.InterSystemMessage.HeaderName;
 import nablarch.fw.messaging.MessagingContext;
 import nablarch.fw.messaging.MessagingException;
@@ -126,6 +127,7 @@ public class JmsMessagingProvider implements MessagingProvider {
      * @param factory コネクションファクトリ
      * @return このオブジェクト自体
      */
+    @Published(tag = "architect")
     public JmsMessagingProvider setConnectionFactory(ConnectionFactory factory) {
         this.factory = factory;
         return this;
@@ -136,6 +138,7 @@ public class JmsMessagingProvider implements MessagingProvider {
      * 
      * @return コネクションファクトリ
      */
+    @Published(tag = "architect")
     public ConnectionFactory getConnectionFactory() {
         return factory;
     }
@@ -148,6 +151,7 @@ public class JmsMessagingProvider implements MessagingProvider {
      * @param table キューの論理名とそれに対応するQueueオブジェクトとのマッピング
      * @return このオブジェクト自体
      */
+    @Published(tag = "architect")
     public JmsMessagingProvider setDestinations(Map<String, Queue> table) {
         queueTable.clear();
         queueTable.putAll(table);
