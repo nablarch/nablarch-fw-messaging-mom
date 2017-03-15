@@ -1,0 +1,11 @@
+file-type:        "Fixed"
+text-encoding:    "Windows-31j"
+record-length:    256
+
+[userData]
+1    KANJI_NAME                  N(100)   # 漢字名称
+101  KANA_NAME                   X(50)    # カナ名称
+151  MAIL_ADDRESS                X(100)   # メールアドレス
+251  EXTENSION_NUMBER_BUILDING   X(2)     # 内線番号(ビル番号)
+253  EXTENSION_NUMBER_PERSONAL   X(4)     # 内線番号(個人番号)
+

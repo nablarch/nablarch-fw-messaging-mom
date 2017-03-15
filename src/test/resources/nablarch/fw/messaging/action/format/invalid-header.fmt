@@ -1,0 +1,7 @@
+file-type:        "Fixed"
+text-encoding:    "Windows-31j"
+record-length:    1
+
+[Header]
+1   requestId   X(1)   # リクエストID
+
