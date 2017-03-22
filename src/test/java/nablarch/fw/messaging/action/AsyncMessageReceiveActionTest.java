@@ -18,7 +18,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import nablarch.common.idgenerator.IdGenerator;
-import nablarch.common.idgenerator.TableIdGenerator;
 import nablarch.common.idgenerator.formatter.LpadFormatter;
 import nablarch.core.dataformat.DataRecordFormatter;
 import nablarch.core.dataformat.FormatterFactory;
@@ -38,7 +37,6 @@ import nablarch.fw.messaging.action.form.INVALID_CONSTRUCTORForm;
 import nablarch.test.core.messaging.EmbeddedMessagingProvider;
 import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
-import nablarch.test.support.db.helper.TargetDb;
 import nablarch.test.support.db.helper.VariousDbTestHelper;
 
 import org.junit.AfterClass;
@@ -442,7 +440,7 @@ public class AsyncMessageReceiveActionTest {
      * @return 採番クラス
      */
     private IdGenerator createIdGenerate() {
-        TableIdGenerator generator = new TableIdGenerator();
+        MockTableIdGenerator generator = new MockTableIdGenerator();
         generator.setTableName("MESSAGING_ID_GENERATE");
         generator.setIdColumnName("ID");
         generator.setNoColumnName("NO");

@@ -29,12 +29,10 @@ dependencies {
   // JMS
   provided 'javax.jms:jms-api:1.1-rev-1'
 
-  testCompile 'com.nablarch.dev:nablarch-test-support:0.0.7'
   testCompile 'junit:junit:4.12'
 
-  testCompile "com.nablarch.framework:nablarch-common-idgenerator-jdbc:${nablarchCommonIdgeneratorJdbcVersion}"
   testCompile "com.nablarch.framework:nablarch-common-jdbc:${nablarchCommonJdbcVersion}"
-  testCompile 'com.nablarch.framework:nablarch-testing:1.0.7'
+  testCompile "com.nablarch.framework:nablarch-testing:${nablarchTestingVersion}"
 
   testRuntime files('src/test/java/')
 }
