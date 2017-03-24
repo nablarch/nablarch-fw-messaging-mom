@@ -1,0 +1,14 @@
+file-type:        "Fixed"
+text-encoding:    "Windows-31j"
+record-length:    308
+
+[Data]
+1    keiNo       X(10)    # 契約番号
+11   itemCode1   X(4)     # 商品コード1
+15   itemName1   N(100)   # 商品名称1
+115  itemAmount1 Z(20)    # 商品金額1
+135  itemCode2   X(4)     # 商品コード2
+139  itemName2   N(100)   # 商品名称2
+239  itemAmount2 Z(20)  0 # 商品金額2
+259 ?dummy       X(50)    #
+

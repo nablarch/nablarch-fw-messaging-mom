@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component-configuration
+    xmlns="http://tis.co.jp/nablarch/component-configuration"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://tis.co.jp/nablarch/component-configuration ../../../../../../main/resources/component-configuration.xsd">
+
+  <!-- データベース接続設定 -->
+  <import file="db-default.xml" />
+
+  <!-- リクエストID抽出の実装 -->
+  <component name="requestIdExtractor" class="nablarch.common.util.ShortRequestIdExtractor" />
+
+  <!-- 論理ファイルパス設定 -->
+  <component name="filePathSetting"
+      class="nablarch.core.util.FilePathSetting">
+    <property name="basePathSettings">
+      <map>
+        <entry key="format"
+            value="classpath:nablarch/fw/messaging/action/format" />
+      </map>
+    </property>
+    <property name="fileExtensions">
+      <map>
+        <entry key="format" value="fmt" />
+      </map>
+    </property>
+  </component>
+
+  <component name="messagingProvider"
+      class="nablarch.test.core.messaging.EmbeddedMessagingProvider">
+    <!-- キュー定義 -->
+    <property name="queueNames">
+      <list>
+        <!-- サービス側にある要求受信キューの論理名 -->
+        <value>RECEIVE.TEST</value>
+      </list>
+    </property>
+  </component>
+
+  <!-- フレームワーク制御ヘッダー定義 -->
+  <component name="fwHeaderDefinition"
+      class="nablarch.fw.messaging.StandardFwHeaderDefinition">
+    <property name="formatFileName" value="header" />
+  </component>
+
+  <!-- データリーダ定義 -->
+  <component
+      name="dataReader"
+      class="nablarch.fw.messaging.reader.FwHeaderReader">
+    <!-- メッセージリーダ定義 -->
+    <property name="messageReader">
+      <component class="nablarch.fw.messaging.reader.MessageReader">
+        <property name="receiveQueueName" value="RECEIVE.TEST" />
+        <property name="readTimeout" value="2000" />
+      </component>
+    </property>
+  </component>
+
+
+  <!-- プロセス停止制御ハンドラ -->
+  <component name="processStopHandler"
+      class="nablarch.fw.handler.BasicProcessStopHandler">
+    <property name="tableName" value="MESSAGING_BATCH_REQUEST" />
+    <property name="requestIdColumnName" value="REQUEST_ID" />
+    <property name="processHaltColumnName" value="PROCESS_HALT_FLG" />
+    <property name="dbTransactionManager" ref="tran" />
+  </component>
+
+  <!-- ２重起動防止ハンドラ -->
+  <component name="duplicateProcessCheckHandler"
+      class="nablarch.fw.handler.DuplicateProcessCheckHandler">
+    <property name="duplicateProcessChecker">
+      <component name="BasicDuplicateProcessChecker" class="nablarch.fw.handler.BasicDuplicateProcessChecker">
+        <property name="dbTransactionManager" ref="tran" />
+        <property name="tableName" value="MESSAGING_BATCH_REQUEST" />
+        <property name="processIdentifierColumnName" value="REQUEST_ID" />
+        <property name="processActiveFlgColumnName" value="PROCESS_ACTIVE_FLG" />
+      </component>
+    </property>
+  </component>
+
+  <!-- リトライハンドラ -->
+  <component name="retryHandler" class="nablarch.fw.handler.RetryHandler">
+    <property name="retryContextFactory">
+      <component class="nablarch.fw.handler.retry.CountingRetryContextFactory">
+        <property name="maxRetryTime" value="300000" />
+        <property name="retryCount" value="3" />
+        <property name="retryIntervals" value="5000" />
+      </component>
+    </property>
+  </component>
+
+  <!-- スレッドコンテキスト -->
+  <component name="threadContextHandler"
+      class="nablarch.common.handler.threadcontext.ThreadContextHandler">
+    <property name="attributes">
+      <list>
+        <!-- ユーザID -->
+        <component
+            class="nablarch.common.handler.threadcontext.UserIdAttribute">
+          <property name="sessionKey" value="user.id" />
+          <property name="anonymousId" value="9999999999" />
+        </component>
+        <!-- リクエストID -->
+        <component
+            class="nablarch.common.handler.threadcontext.RequestIdAttribute" />
+        <!-- 内部リクエストID -->
+        <component
+            class="nablarch.common.handler.threadcontext.InternalRequestIdAttribute" />
+      </list>
+    </property>
+  </component>
+
+  <!-- データベーストランザクション管理クラスの設定 -->
+  <component name="serviceAvailabilityDbManager"
+      class="nablarch.core.db.transaction.SimpleDbTransactionManager">
+    <property name="dbTransactionName" value="tran" />
+  </component>
+
+  <!-- ハンドラーキュー構成 -->
+  <list name="handlerQueue">
+
+    <!-- ステータスコード変換ハンドラ -->
+    <component class="nablarch.fw.handler.StatusCodeConvertHandler" />
+
+    <!-- グローバルエラーハンドラ (メインスレッド用) -->
+    <component class="nablarch.fw.handler.GlobalErrorHandler" />
+
+    <!-- スレッドコンテキスト管理ハンドラ -->
+    <component-ref name="threadContextHandler" />
+
+    <!-- 2重起動制御ハンドラ -->
+    <component-ref name="duplicateProcessCheckHandler" />
+
+    <!-- リクエストパスベースディスパッチハンドラ -->
+    <component class="nablarch.fw.handler.RequestPathJavaPackageMapping">
+      <property name="basePackage"
+          value="nablarch.fw.messaging.action" />
+      <property name="immediate" value="false" />
+    </component>
+
+    <!-- マルチスレッド実行制御ハンドラ -->
+    <component class="nablarch.fw.handler.MultiThreadExecutionHandler">
+      <property name="concurrentNumber" value="1" />
+      <property name="terminationTimeout" value="600" />
+    </component>
+    
+    <!-- リトライハンドラ -->
+    <component-ref name="retryHandler" />
+
+    <!-- メッセージコンテキスト管理ハンドラ -->
+    <component class="nablarch.fw.messaging.handler.MessagingContextHandler" />
+      
+    <!-- データベース接続管理ハンドラ (リクエストスレッド用)  -->
+    <component class="nablarch.common.handler.DbConnectionManagementHandler" />
+
+    <!-- ループハンドラ -->
+    <component class="nablarch.fw.handler.RequestThreadLoopHandler">
+      <property name="serviceUnavailabilityRetryInterval" value="500" />
+    </component>
+    
+    <!-- スレッドコンテキスト管理ハンドラ(リクエストスレッド用) -->
+    <component-ref name="threadContextHandler" />
+    
+    <!-- プロセス停止制御ハンドラ -->
+    <component-ref name="processStopHandler" />
+    
+    <!-- 単体テスト用 -->
+    <component class="nablarch.fw.messaging.action.ExceptionCatcher" />    
+
+    <!-- トランザクション制御ハンドラ -->
+    <component class="nablarch.common.handler.TransactionManagementHandler" />
+    
+    <!-- データリードハンドラ -->
+    <component class="nablarch.fw.handler.DataReadHandler" />
+
+
+  </list>
+
+  <component name="initializer"
+      class="nablarch.core.repository.initialization.BasicApplicationInitializer">
+    <!--
+      BasicApplicationInitializerのinitializeListプロパティ。
+      ここで記述した順序で初期化が実行される。
+    -->
+    <property name="initializeList">
+      <list>
+        <component-ref name="processStopHandler" />
+        <component-ref name="duplicateProcessCheckHandler.BasicDuplicateProcessChecker" />
+      </list>
+    </property>
+  </component>
+
+</component-configuration>

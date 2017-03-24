@@ -1,0 +1,8 @@
+file-type:        "Fixed"
+text-encoding:    "Windows-31j"
+record-length:    50
+
+[Header]
+1   requestId   X(10)   # リクエストID
+11  messageId   X(20)   # メッセージID
+31 ?reserved    X(20)   # 予備領域

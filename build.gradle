@@ -28,6 +28,13 @@ dependencies {
 
   // JMS
   provided 'javax.jms:jms-api:1.1-rev-1'
+
+  testCompile 'junit:junit:4.12'
+
+  testCompile "com.nablarch.framework:nablarch-common-jdbc:${nablarchCommonJdbcVersion}"
+  testCompile "com.nablarch.framework:nablarch-testing:${nablarchTestingVersion}"
+
+  testRuntime files('src/test/java/')
 }
 
 task wrapper(type: Wrapper) {
