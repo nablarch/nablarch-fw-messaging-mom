@@ -1,11 +1,8 @@
 package nablarch.fw.messaging.action;
 
-import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.nullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.junit.matchers.JUnitMatchers.containsString;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -52,8 +49,9 @@ import org.junit.runner.RunWith;
 public class AsyncMessageSendActionTest {
 
     @Rule
-    public SystemRepositoryResource repositoryResource = new SystemRepositoryResource("nablarch/fw/messaging/action/AsyncMessageSendActionTest.xml");
-	
+    public SystemRepositoryResource repositoryResource = new SystemRepositoryResource(
+            "nablarch/fw/messaging/action/AsyncMessageSendActionTest.xml");
+
     /** {@link MessagingContext} */
     private static MessagingContext context = null;
 
@@ -66,17 +64,17 @@ public class AsyncMessageSendActionTest {
     public static void classSetUp() {
         ThreadContext.clear();
 
-    	VariousDbTestHelper.createTable(MessagingBatchRequest.class);
-    	VariousDbTestHelper.createTable(SendMessage1.class);
-    	VariousDbTestHelper.createTable(SendMessage2.class);
-    	
-    	VariousDbTestHelper.setUpTable(
-    			new MessagingBatchRequest("R000000001", "リクエスト０１", "0", "0", "1"),
-    			new MessagingBatchRequest("R000000002", "リクエスト０２", "0", "0", "1"),
-    			new MessagingBatchRequest("R000000003", "リクエスト０３", "0", "0", "1"),
-    			new MessagingBatchRequest("R000000004", "リクエスト０４", "0", "0", "1"));
+        VariousDbTestHelper.createTable(MessagingBatchRequest.class);
+        VariousDbTestHelper.createTable(SendMessage1.class);
+        VariousDbTestHelper.createTable(SendMessage2.class);
+
+        VariousDbTestHelper.setUpTable(
+                new MessagingBatchRequest("R000000001", "リクエスト０１", "0", "0", "1"),
+                new MessagingBatchRequest("R000000002", "リクエスト０２", "0", "0", "1"),
+                new MessagingBatchRequest("R000000003", "リクエスト０３", "0", "0", "1"),
+                new MessagingBatchRequest("R000000004", "リクエスト０４", "0", "0", "1"));
     }
-    
+
     @Before
     public void setUp() {
         if (context != null) {
@@ -94,11 +92,11 @@ public class AsyncMessageSendActionTest {
             final String requestId,
             final String userId,
             final String sendMessageRequestId) throws InterruptedException {
-    	VariousDbTestHelper.setUpTable(
-    			new MessagingBatchRequest("R000000001", "リクエスト０１", "0", "0", "1"),
-    			new MessagingBatchRequest("R000000002", "リクエスト０２", "0", "0", "1"),
-    			new MessagingBatchRequest("R000000003", "リクエスト０３", "0", "0", "1"),
-    			new MessagingBatchRequest("R000000004", "リクエスト０４", "0", "0", "1"));
+        VariousDbTestHelper.setUpTable(
+                new MessagingBatchRequest("R000000001", "リクエスト０１", "0", "0", "1"),
+                new MessagingBatchRequest("R000000002", "リクエスト０２", "0", "0", "1"),
+                new MessagingBatchRequest("R000000003", "リクエスト０３", "0", "0", "1"),
+                new MessagingBatchRequest("R000000004", "リクエスト０４", "0", "0", "1"));
 
         ExecutorService executorService = Executors.newFixedThreadPool(1);
         CompletionService<Integer> service =
@@ -148,7 +146,7 @@ public class AsyncMessageSendActionTest {
             final String requestId) throws InterruptedException {
 
         Thread.sleep(5000);
-        
+
         MessagingBatchRequest entity = VariousDbTestHelper.findById(MessagingBatchRequest.class, requestId);
         entity.processHaltFlg = "1";
         VariousDbTestHelper.update(entity);
@@ -156,7 +154,7 @@ public class AsyncMessageSendActionTest {
         // プロセスアクティブフラグがONになるまで待機
         int count = 0;
         while (true) {
-        	MessagingBatchRequest query = VariousDbTestHelper.findById(MessagingBatchRequest.class, requestId);
+            MessagingBatchRequest query = VariousDbTestHelper.findById(MessagingBatchRequest.class, requestId);
             if (query == null) {
                 break;
             }
@@ -186,10 +184,13 @@ public class AsyncMessageSendActionTest {
         //**********************************************************************
         // テストデータ準備
         //**********************************************************************
-    	VariousDbTestHelper.setUpTable(
-    			new SendMessage1("00000000000000000001", "1111111111", "0001", "アイテム１０", 100L, null, null, null, "0", null, null, null, null, null, null),
-    			new SendMessage1("00000000000000000002", "1111111112", "0001", "アイテム１１", 1000L, null, null, null, "0", null, null, null, null, null, null),
-    			new SendMessage1("00000000000000000003", "1111111112", "0011", "アイテム１２", 10000L, null, null, null, "0", null, null, null, null, null, null));
+        VariousDbTestHelper.setUpTable(
+                new SendMessage1("00000000000000000001", "1111111111", "0001", "アイテム１０", 100L, null, null, null, "0",
+                        null, null, null, null, null, null),
+                new SendMessage1("00000000000000000002", "1111111112", "0001", "アイテム１１", 1000L, null, null, null, "0",
+                        null, null, null, null, null, null),
+                new SendMessage1("00000000000000000003", "1111111112", "0011", "アイテム１２", 10000L, null, null, null, "0",
+                        null, null, null, null, null, null));
 
         //**********************************************************************
         // 送信アクション用の設定
@@ -240,10 +241,12 @@ public class AsyncMessageSendActionTest {
         assertThat(record.getString("KEI_NO"), is("1111111111"));
         assertThat(record.getString("ITEM_CODE_1"), is("0001"));
         assertThat(record.getString("ITEM_NAME_1"), is("アイテム１０"));
-        assertThat(record.getBigDecimal("ITEM_AMOUNT_1").intValue(), is(100));
+        assertThat(record.getBigDecimal("ITEM_AMOUNT_1")
+                         .intValue(), is(100));
         assertThat(record.getString("ITEM_CODE_2"), is(nullValue()));
         assertThat(record.getString("ITEM_NAME_2"), is(nullValue()));
-        assertThat(record.getBigDecimal("ITEM_AMOUNT_2").intValue(), is(0));
+        assertThat(record.getBigDecimal("ITEM_AMOUNT_2")
+                         .intValue(), is(0));
 
         //**********************************************************************
         // 2電文目のアサート
@@ -261,10 +264,12 @@ public class AsyncMessageSendActionTest {
         assertThat(record.getString("KEI_NO"), is("1111111112"));
         assertThat(record.getString("ITEM_CODE_1"), is("0001"));
         assertThat(record.getString("ITEM_NAME_1"), is("アイテム１１"));
-        assertThat(record.getBigDecimal("ITEM_AMOUNT_1").intValue(), is(1000));
+        assertThat(record.getBigDecimal("ITEM_AMOUNT_1")
+                         .intValue(), is(1000));
         assertThat(record.getString("ITEM_CODE_2"), is(nullValue()));
         assertThat(record.getString("ITEM_NAME_2"), is(nullValue()));
-        assertThat(record.getBigDecimal("ITEM_AMOUNT_2").intValue(), is(0));
+        assertThat(record.getBigDecimal("ITEM_AMOUNT_2")
+                         .intValue(), is(0));
 
         //**********************************************************************
         // 3電文目のアサート
@@ -283,10 +288,12 @@ public class AsyncMessageSendActionTest {
         assertThat(record.getString("KEI_NO"), is("1111111112"));
         assertThat(record.getString("ITEM_CODE_1"), is("0011"));
         assertThat(record.getString("ITEM_NAME_1"), is("アイテム１２"));
-        assertThat(record.getBigDecimal("ITEM_AMOUNT_1").intValue(), is(10000));
+        assertThat(record.getBigDecimal("ITEM_AMOUNT_1")
+                         .intValue(), is(10000));
         assertThat(record.getString("ITEM_CODE_2"), is(nullValue()));
         assertThat(record.getString("ITEM_NAME_2"), is(nullValue()));
-        assertThat(record.getBigDecimal("ITEM_AMOUNT_2").intValue(), is(0));
+        assertThat(record.getBigDecimal("ITEM_AMOUNT_2")
+                         .intValue(), is(0));
 
         //**********************************************************************
         // 4電文目のアサート
@@ -315,10 +322,14 @@ public class AsyncMessageSendActionTest {
         //**********************************************************************
         // テストデータ準備
         //**********************************************************************
-    	VariousDbTestHelper.setUpTable(
-    			new SendMessage2("00000000000000000001", "漢字１", "ｶﾅ1", "1@mail", "01", "0001", "0", null, null, null, null, null, null),
-    			new SendMessage2("00000000000000000002", "漢字２", "ｶﾅ000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", "2@mail", "02", "0002", "0", null, null, null, null, null, null),
-    			new SendMessage2("00000000000000000003", "漢字３", "ｶﾅ3", "3@mail", "03", "0003", "0", null, null, null, null, null, null));
+        VariousDbTestHelper.setUpTable(
+                new SendMessage2("00000000000000000001", "漢字１", "ｶﾅ1", "1@mail", "01", "0001", "0", null, null, null,
+                        null, null, null),
+                new SendMessage2("00000000000000000002", "漢字２",
+                        "ｶﾅ000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000",
+                        "2@mail", "02", "0002", "0", null, null, null, null, null, null),
+                new SendMessage2("00000000000000000003", "漢字３", "ｶﾅ3", "3@mail", "03", "0003", "0", null, null, null,
+                        null, null, null));
 
         //**********************************************************************
         // 送信アクション用の設定
@@ -522,12 +533,12 @@ public class AsyncMessageSendActionTest {
         settings.setFormatDir("format");
         settings.setHeaderFormatName("header");
         repositoryResource.addComponent("asyncMessageSendActionSettings", settings);
-        
+
         FilePathSetting filePathSetting = new FilePathSetting();
         filePathSetting.addBasePathSetting("format", "file:.");
         filePathSetting.addFileExtensions("format", "format");
         repositoryResource.addComponent("filePathSetting", filePathSetting);
-        
+
         action.initialize(commandLine, null);
         try {
             action.createDataRecordFormatter();
@@ -553,12 +564,13 @@ public class AsyncMessageSendActionTest {
 
     private DataRecordFormatter createFormatter(String formatFileName) {
         formatFileName = formatFileName.startsWith("header")
-                       ? formatFileName
-                       : formatFileName + "_SEND";
+                ? formatFileName
+                : formatFileName + "_SEND";
         FormatterFactory formatterFactory = FormatterFactory.getInstance();
         return formatterFactory.createFormatter(
-                FilePathSetting.getInstance().getFileIfExists("format",
-                        formatFileName));
+                FilePathSetting.getInstance()
+                               .getFileIfExists("format",
+                                       formatFileName));
     }
 }
 
