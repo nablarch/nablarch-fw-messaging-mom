@@ -34,6 +34,7 @@ import nablarch.test.support.SystemRepositoryResource;
 import nablarch.test.support.db.helper.DatabaseTestRunner;
 import nablarch.test.support.db.helper.VariousDbTestHelper;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
@@ -53,7 +54,7 @@ public class AsyncMessageSendActionTest {
             "nablarch/fw/messaging/action/AsyncMessageSendActionTest.xml");
 
     /** {@link MessagingContext} */
-    private static MessagingContext context = null;
+    private static MessagingContext context;
 
     /**
      * 本テストクラスのセットアップ処理
@@ -64,22 +65,31 @@ public class AsyncMessageSendActionTest {
     public static void classSetUp() {
         ThreadContext.clear();
 
-        VariousDbTestHelper.createTable(MessagingBatchRequest.class);
         VariousDbTestHelper.createTable(SendMessage1.class);
         VariousDbTestHelper.createTable(SendMessage2.class);
 
+    }
+
+    private ExecutorService executorService;
+    
+    @Before
+    public void setUp() {
+        VariousDbTestHelper.dropTable(MessagingBatchRequest.class);
+        VariousDbTestHelper.createTable(MessagingBatchRequest.class);
         VariousDbTestHelper.setUpTable(
                 new MessagingBatchRequest("R000000001", "リクエスト０１", "0", "0", "1"),
                 new MessagingBatchRequest("R000000002", "リクエスト０２", "0", "0", "1"),
                 new MessagingBatchRequest("R000000003", "リクエスト０３", "0", "0", "1"),
                 new MessagingBatchRequest("R000000004", "リクエスト０４", "0", "0", "1"));
-    }
-
-    @Before
-    public void setUp() {
         if (context != null) {
             context.close();
         }
+        executorService = Executors.newFixedThreadPool(1);
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        executorService.shutdownNow();
     }
 
     /**
@@ -88,17 +98,17 @@ public class AsyncMessageSendActionTest {
      * @param requestId リクエストID
      * @param userId ユーザID
      */
-    private static CompletionService<Integer> executeSendThread(
+    private CompletionService<Integer> executeSendThread(
             final String requestId,
             final String userId,
-            final String sendMessageRequestId) throws InterruptedException {
+            final String sendMessageRequestId) throws Exception {
         VariousDbTestHelper.setUpTable(
                 new MessagingBatchRequest("R000000001", "リクエスト０１", "0", "0", "1"),
                 new MessagingBatchRequest("R000000002", "リクエスト０２", "0", "0", "1"),
                 new MessagingBatchRequest("R000000003", "リクエスト０３", "0", "0", "1"),
                 new MessagingBatchRequest("R000000004", "リクエスト０４", "0", "0", "1"));
+        VariousDbTestHelper.getNativeConnection().commit();
 
-        ExecutorService executorService = Executors.newFixedThreadPool(1);
         CompletionService<Integer> service =
                 new ExecutorCompletionService<Integer>(executorService);
 
@@ -113,27 +123,6 @@ public class AsyncMessageSendActionTest {
                 return Main.execute(commandLine);
             }
         });
-
-        // プロセスアクティブフラグがONになるまで待機
-        int count = 0;
-        while (true) {
-            MessagingBatchRequest query = VariousDbTestHelper.findById(MessagingBatchRequest.class, requestId);
-            if (query == null) {
-                break;
-            }
-            if ("1".equals(query.processActiveFlg)) {
-                break;
-            }
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            if (count++ > 100) {
-                throw new RuntimeException(
-                        "テスト失敗！！！テスト用の電文送信プロセスが起動に失敗しました。");
-            }
-        }
         return service;
     }
 
