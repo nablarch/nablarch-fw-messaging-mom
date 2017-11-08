@@ -107,7 +107,6 @@ public class AsyncMessageSendActionTest {
                 new MessagingBatchRequest("R000000002", "リクエスト０２", "0", "0", "1"),
                 new MessagingBatchRequest("R000000003", "リクエスト０３", "0", "0", "1"),
                 new MessagingBatchRequest("R000000004", "リクエスト０４", "0", "0", "1"));
-        VariousDbTestHelper.getNativeConnection().commit();
 
         CompletionService<Integer> service =
                 new ExecutorCompletionService<Integer>(executorService);
