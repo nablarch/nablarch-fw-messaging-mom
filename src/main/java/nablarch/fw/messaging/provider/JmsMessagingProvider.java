@@ -515,7 +515,7 @@ public class JmsMessagingProvider implements MessagingProvider {
                 Object value = header.getValue();
                 if (name.startsWith("JMSX")) {          // JMS拡張ヘッダ
                     message.setObjectProperty(name, value);
-                    break;
+                    continue;
                 }
                 if (name.startsWith("JMS")) {           // JMSヘッダ
                     continue;
