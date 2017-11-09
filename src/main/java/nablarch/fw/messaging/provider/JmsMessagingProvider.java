@@ -71,10 +71,10 @@ public class JmsMessagingProvider implements MessagingProvider {
     private int redeliveryLimit = 0; 
     
     /** 同期送信デフォルトタイムアウト値 (msec) */
-    private long timeout = 300 * 1000;
+    private long timeout = 300 * 1000L;
     
     /** 送信電文デフォルト有効期間 (msec) */
-    private long timeToLive = 60 * 1000;
+    private long timeToLive = 60 * 1000L;
     
     /** {@link MessagingException}ファクトリオブジェクト */
     private MessagingExceptionFactory messagingExceptionFactory = new BasicMessagingExceptionFactory();
