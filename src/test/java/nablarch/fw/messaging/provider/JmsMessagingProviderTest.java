@@ -129,7 +129,7 @@ public class JmsMessagingProviderTest {
         assertEquals(3,        headers.get("JMSXDeliveryCount"));
         assertEquals("value1", headers.get("NABLARCHProp1"));
     }
-    
+
     /**
      * JMSヘッダー/ユーザ定義属性の取り回しのテスト(送信時)
      */
@@ -949,6 +949,12 @@ public class JmsMessagingProviderTest {
                              .setMessageId("ccc")
                              .setCorrelationId("333"));
 
+        //サロゲートペア対応
+        context.send(new SendingMessage()
+                            .setDestination("QUEUE")
+                            .setMessageId("🙀🙀🙀")
+                            .setCorrelationId("🙊🙊🙊"));
+
         ReceivedMessage message = context.receiveSync("QUEUE", "111", 100);
         assertThat(message.getMessageId(), is("aaa"));
 
@@ -957,6 +963,9 @@ public class JmsMessagingProviderTest {
 
         message = context.receiveSync("QUEUE", "333", 100);
         assertThat(message.getMessageId(), is("ccc"));
+
+        message = context.receiveSync("QUEUE", "🙊🙊🙊", 100);
+        assertThat(message.getMessageId(), is("🙀🙀🙀"));
 
         // サーバ終了
         context.close();
