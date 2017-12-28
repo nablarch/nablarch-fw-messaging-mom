@@ -131,36 +131,6 @@ public class JmsMessagingProviderTest {
     }
 
     /**
-     * JMSヘッダー/ユーザ定義属性でサロゲートペアを扱うテストケース(受信時)
-     */
-    @Test public void readingHeadersFromASurrogatepairReceivedMessage() throws Exception {
-
-        receivingMessage = new StubMessage();
-
-        // JMS標準ヘッダ
-        receivingMessage.setJMSDeliveryMode(1);
-        receivingMessage.setJMSType("🙀🙀🙀");
-        receivingMessage.setJMSPriority(9);
-
-        // JMS拡張ヘッダ
-        receivingMessage.setIntProperty("🙊🙊🙊", 3);
-
-        // ユーザプロパティ
-        receivingMessage.setStringProperty("🙊🙈🙉", "🙀🙀🙀");
-
-        ReceivedMessage received = createProvider()
-                .createContext()
-                .receiveSync("LOCAL.RECEIVE");
-
-        Map<String, Object> headers = received.getHeaderMap();
-        assertEquals(1,        headers.get(JmsHeaderName.DELIVERY_MODE));
-        assertEquals("🙀🙀🙀",  headers.get(JmsHeaderName.TYPE));
-        assertEquals(9,        headers.get(JmsHeaderName.PRIORITY));
-        assertEquals(3,        headers.get("🙊🙊🙊"));
-        assertEquals("🙀🙀🙀", headers.get("🙊🙈🙉"));
-    }
-
-    /**
      * JMSヘッダー/ユーザ定義属性の取り回しのテスト(送信時)
      */
     @Test public void writingHeadersToASendingMessage() throws Exception {
@@ -177,25 +147,6 @@ public class JmsMessagingProviderTest {
         assertEquals(9,        sentMessage.getJMSPriority());
         assertEquals(3,        sentMessage.getIntProperty("JMSXDeliveryCount"));
         assertEquals("value1", sentMessage.getStringProperty("NABLARCHProp1"));
-    }
-
-    /**
-     * JMSヘッダー/ユーザ定義属性の取り回しのテスト(送信時)
-     */
-    @Test public void writingHeadersToASurrogatepairSendingMessage() throws Exception {
-        createProvider().createContext().send(new SendingMessage()
-                .setHeader(JmsHeaderName.DELIVERY_MODE, 1)
-                .setHeader(JmsHeaderName.TYPE,          "🙀🙀🙀")
-                .setHeader(JmsHeaderName.PRIORITY,      9)
-                .setHeader("🙊🙊🙊",         3)
-                .setHeader("🙊🙈🙉",             "🙀🙀🙀")
-        );
-
-        assertEquals(1,        sentMessage.getJMSDeliveryMode());
-        assertEquals("🙀🙀🙀",  sentMessage.getJMSType());
-        assertEquals(9,        sentMessage.getJMSPriority());
-        assertEquals(3,        sentMessage.getIntProperty("🙊🙊🙊"));
-        assertEquals("🙀🙀🙀", sentMessage.getStringProperty("🙊🙈🙉"));
     }
 
     /**
@@ -998,6 +949,12 @@ public class JmsMessagingProviderTest {
                              .setMessageId("ccc")
                              .setCorrelationId("333"));
 
+        //サロゲートペア対応
+        context.send(new SendingMessage()
+                            .setDestination("QUEUE")
+                            .setMessageId("🙀🙀🙀")
+                            .setCorrelationId("🙊🙊🙊"));
+
         ReceivedMessage message = context.receiveSync("QUEUE", "111", 100);
         assertThat(message.getMessageId(), is("aaa"));
 
@@ -1006,6 +963,9 @@ public class JmsMessagingProviderTest {
 
         message = context.receiveSync("QUEUE", "333", 100);
         assertThat(message.getMessageId(), is("ccc"));
+
+        message = context.receiveSync("QUEUE", "🙊🙊🙊", 100);
+        assertThat(message.getMessageId(), is("🙀🙀🙀"));
 
         // サーバ終了
         context.close();
