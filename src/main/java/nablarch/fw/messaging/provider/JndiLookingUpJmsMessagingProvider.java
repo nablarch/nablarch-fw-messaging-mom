@@ -4,8 +4,8 @@ import nablarch.core.repository.jndi.JndiHelper;
 import nablarch.core.util.StringUtil;
 import nablarch.fw.messaging.MessagingContext;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.Queue;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.Queue;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,8 +32,8 @@ import java.util.Map.Entry;
  *       </property>
  *     </component>
  *   </property>
- *   <!-- javax.jms.ConnectionFactory実装クラスをルックアップするためのJNDI名 -->
- *   <property name="connectionFactoryJndiName" value="javax.jms.QueueConnectionFactory"/>
+ *   <!-- jakarta.jms.ConnectionFactory実装クラスをルックアップするためのJNDI名 -->
+ *   <property name="connectionFactoryJndiName" value="jakarta.jms.QueueConnectionFactory"/>
  *
  *   <!-- FWで使用するキュー論理名と、java.jms.Queue実装クラスをルックアップするためのJNDI名のペア -->
  *   <property name="destinationNamePairs">
