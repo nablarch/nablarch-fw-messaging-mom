@@ -33,9 +33,9 @@
     </dependency>
 
     <dependency>
-      <groupId>javax.jms</groupId>
-      <artifactId>jms-api</artifactId>
-      <version>1.1-rev-1</version>
+      <groupId>jakarta.jms</groupId>
+      <artifactId>jakarta.jms-api</artifactId>
+      <version>3.1.0</version>
       <scope>provided</scope>
     </dependency>
 
