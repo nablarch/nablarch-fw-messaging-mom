@@ -1,5 +1,7 @@
 package nablarch.fw.messaging.provider;
 
+import jakarta.jms.CompletionListener;
+import jakarta.jms.JMSContext;
 import nablarch.fw.messaging.InterSystemMessage.HeaderName;
 import nablarch.fw.messaging.MessagingContext;
 import nablarch.fw.messaging.MessagingException;
@@ -11,30 +13,30 @@ import nablarch.fw.messaging.provider.exception.BasicMessagingExceptionFactory;
 import nablarch.test.core.messaging.EmbeddedMessagingProvider;
 import org.junit.Test;
 
-import javax.jms.BytesMessage;
-import javax.jms.Connection;
-import javax.jms.ConnectionConsumer;
-import javax.jms.ConnectionFactory;
-import javax.jms.ConnectionMetaData;
-import javax.jms.Destination;
-import javax.jms.ExceptionListener;
-import javax.jms.JMSException;
-import javax.jms.MapMessage;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.MessageListener;
-import javax.jms.MessageProducer;
-import javax.jms.ObjectMessage;
-import javax.jms.Queue;
-import javax.jms.QueueBrowser;
-import javax.jms.ServerSessionPool;
-import javax.jms.Session;
-import javax.jms.StreamMessage;
-import javax.jms.TemporaryQueue;
-import javax.jms.TemporaryTopic;
-import javax.jms.TextMessage;
-import javax.jms.Topic;
-import javax.jms.TopicSubscriber;
+import jakarta.jms.BytesMessage;
+import jakarta.jms.Connection;
+import jakarta.jms.ConnectionConsumer;
+import jakarta.jms.ConnectionFactory;
+import jakarta.jms.ConnectionMetaData;
+import jakarta.jms.Destination;
+import jakarta.jms.ExceptionListener;
+import jakarta.jms.JMSException;
+import jakarta.jms.MapMessage;
+import jakarta.jms.Message;
+import jakarta.jms.MessageConsumer;
+import jakarta.jms.MessageListener;
+import jakarta.jms.MessageProducer;
+import jakarta.jms.ObjectMessage;
+import jakarta.jms.Queue;
+import jakarta.jms.QueueBrowser;
+import jakarta.jms.ServerSessionPool;
+import jakarta.jms.Session;
+import jakarta.jms.StreamMessage;
+import jakarta.jms.TemporaryQueue;
+import jakarta.jms.TemporaryTopic;
+import jakarta.jms.TextMessage;
+import jakarta.jms.Topic;
+import jakarta.jms.TopicSubscriber;
 import java.io.Serializable;
 import java.lang.reflect.Constructor;
 import java.util.Arrays;
@@ -283,6 +285,26 @@ public class JmsMessagingProviderTest {
             return createConnection();
         }
 
+        @Override
+        public JMSContext createContext() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public JMSContext createContext(String s, String s1) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public JMSContext createContext(String s, String s1, int i) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public JMSContext createContext(int i) {
+            throw new UnsupportedOperationException();
+        }
+
     }
 
     public static class StubMessage implements BytesMessage {
@@ -292,6 +314,16 @@ public class JmsMessagingProviderTest {
 
         public void clearBody() throws JMSException {
 
+        }
+
+        @Override
+        public <T> T getBody(Class<T> aClass) throws JMSException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isBodyAssignableTo(Class aClass) throws JMSException {
+            throw new UnsupportedOperationException();
         }
 
         private final Map<String, Object> properties = new HashMap<String, Object>();
@@ -600,6 +632,16 @@ public class JmsMessagingProviderTest {
         public void writeUTF(String arg0) throws JMSException {
 
         }
+
+        @Override
+        public long getJMSDeliveryTime() throws JMSException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void setJMSDeliveryTime(long l) throws JMSException {
+            throw new UnsupportedOperationException();
+        }
     }
 
     public static class StubProducer implements MessageProducer {
@@ -674,6 +716,36 @@ public class JmsMessagingProviderTest {
 
         public void setTimeToLive(long arg0) throws JMSException {
 
+        }
+
+        @Override
+        public void setDeliveryDelay(long l) throws JMSException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public long getDeliveryDelay() throws JMSException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void send(Message message, CompletionListener completionListener) throws JMSException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void send(Message message, int i, int i1, long l, CompletionListener completionListener) throws JMSException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void send(Destination destination, Message message, CompletionListener completionListener) throws JMSException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public void send(Destination destination, Message message, int i, int i1, long l, CompletionListener completionListener) throws JMSException {
+            throw new UnsupportedOperationException();
         }
     }
 
@@ -766,6 +838,36 @@ public class JmsMessagingProviderTest {
         public TopicSubscriber createDurableSubscriber(Topic arg0, String arg1,
                 String arg2, boolean arg3) throws JMSException {
             return null;
+        }
+
+        @Override
+        public MessageConsumer createDurableConsumer(Topic topic, String s) throws JMSException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public MessageConsumer createDurableConsumer(Topic topic, String s, String s1, boolean b) throws JMSException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public MessageConsumer createSharedDurableConsumer(Topic topic, String s) throws JMSException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public MessageConsumer createSharedDurableConsumer(Topic topic, String s, String s1) throws JMSException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public MessageConsumer createSharedConsumer(Topic topic, String s) throws JMSException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public MessageConsumer createSharedConsumer(Topic topic, String s, String s1) throws JMSException {
+            throw new UnsupportedOperationException();
         }
 
         public MapMessage createMapMessage() throws JMSException {
@@ -911,6 +1013,26 @@ public class JmsMessagingProviderTest {
 
         public void stop() throws JMSException {
             
+        }
+
+        @Override
+        public ConnectionConsumer createSharedConnectionConsumer(Topic topic, String s, String s1, ServerSessionPool serverSessionPool, int i) throws JMSException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public ConnectionConsumer createSharedDurableConnectionConsumer(Topic topic, String s, String s1, ServerSessionPool serverSessionPool, int i) throws JMSException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Session createSession(int i) throws JMSException {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Session createSession() throws JMSException {
+            throw new UnsupportedOperationException();
         }
     }
     
