@@ -35,7 +35,7 @@ import java.util.Map.Entry;
  *   <!-- jakarta.jms.ConnectionFactory実装クラスをルックアップするためのJNDI名 -->
  *   <property name="connectionFactoryJndiName" value="jakarta.jms.QueueConnectionFactory"/>
  *
- *   <!-- FWで使用するキュー論理名と、java.jms.Queue実装クラスをルックアップするためのJNDI名のペア -->
+ *   <!-- FWで使用するキュー論理名と、jakarta.jms.Queue実装クラスをルックアップするためのJNDI名のペア -->
  *   <property name="destinationNamePairs">
  *     <map>
  *       <!-- key=キュー論理名、value=キューJNDI名 -->
