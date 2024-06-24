@@ -168,7 +168,7 @@ public class JndiLookingUpJmsMessagingProvider extends JmsMessagingProvider {
      * @return key=キュー論理名、value={@link Queue}をペアにしたMap
      */
     private Map<String, Queue> lookUpQueues(Map<String, String> pairs) {
-        Map<String, Queue> result = new HashMap<String, Queue>();
+        Map<String, Queue> result = new HashMap<>();
         for (Entry<String, String> pair : pairs.entrySet()) {
             String logicalName = pair.getKey();
             String nameToLookUpInJndi = pair.getValue();
